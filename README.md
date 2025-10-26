@@ -73,7 +73,6 @@ The allocator implements a **three-tier caching hierarchy** to optimize for diff
 - Reduces kernel transitions: one `mmap()` can serve hundreds of allocations
 
 #### Concurrency & Synchronization
-- **Lock-free fast path**: 99% of allocations hit ThreadCache without locking
 - **Fine-grained locking**: Separate mutexes per size class in TransferCache
 - **Thread-local storage**: Eliminates cache coherence overhead between cores
 
@@ -109,16 +108,6 @@ mem_allocator/
 └── benchmark.cpp       # Multi-threaded performance test
 ```
 
-### 🛠️ Technical Challenges Solved
-
-1. **Bootstrap Problem**: Allocator needs memory to track memory
-   - Solution: Pre-allocated static buffer for span metadata
-
-2. **Recursion Prevention**: `malloc()` called during internal operations
-   - Solution: Custom span allocator using pre-allocated memory pool
-
-3. **Memory Leaks in TLS**: Thread-local destructors not called
-   - Solution: Scavenging threshold to proactively return memory
 
 ---
 
@@ -269,7 +258,7 @@ Container/
 4. **Graceful Cleanup**: Leftover cgroups and network devices persist
    - Solution: Cleanup hooks in parent after child exits
 
-### 🔍 Comparison with Docker
+
 
 ## 3. Event-Driven Web Server
 
